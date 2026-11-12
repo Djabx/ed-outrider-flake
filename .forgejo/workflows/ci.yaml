@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  check-and-build:
+    runs-on: native
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Flake
+        run: nix flake check
+
+      - name: Build web server package
+        run: nix build .#default

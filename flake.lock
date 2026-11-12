@@ -1,0 +1,44 @@
+{
+  "nodes": {
+    "ed-outrider-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794344451,
+        "narHash": "sha256-ZJohiq0SrfMGAdwFfQkj/H+o5i2BgdUGF8rYKFmXT9s=",
+        "owner": "weslocke",
+        "repo": "ED-Outrider",
+        "rev": "c1bfcc27ad89473ce607cf5ad37fef2b1e4e2879",
+        "type": "github"
+      },
+      "original": {
+        "owner": "weslocke",
+        "repo": "ED-Outrider",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1794386569,
+        "narHash": "sha256-x9sADJvoVG0L6RejZB+/BB4YiGZFBZrfTlhF4uBq1tQ=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "d4f25a3e562008648d45bcf2d70bcc7422cad84e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "ed-outrider-src": "ed-outrider-src",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
