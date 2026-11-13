@@ -55,6 +55,7 @@ in
       description = "ED-Outrider exploration companion for Elite Dangerous";
       wantedBy = [ "graphical-session.target" ];
       partOf = [ "graphical-session.target" ];
+      after = [ "graphical-session.target" ];
 
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/ed-outrider --host ${cfg.host} --port ${toString cfg.port} ${lib.escapeShellArgs cfg.extraArgs}";

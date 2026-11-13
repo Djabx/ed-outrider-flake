@@ -5,6 +5,7 @@
   makeWrapper,
   wl-clipboard,
   xclip,
+  pipewire,
   src,
 }:
 
@@ -44,7 +45,7 @@ stdenv.mkDerivation {
     makeWrapper ${pythonEnv}/bin/python $out/bin/ed-outrider \
       --add-flags "$out/share/ed-outrider/ed_outrider.py" \
       --set PYTHONPATH "$out/share/ed-outrider" \
-      --prefix PATH : ${lib.makeBinPath [ wl-clipboard xclip ]} \
+      --prefix PATH : ${lib.makeBinPath [ wl-clipboard xclip pipewire ]} \
       --run 'export OUTRIDER_DATA_DIR="''${XDG_DATA_HOME:-$HOME/.local/share}/ed-outrider"' \
       --run 'export OUTRIDER_CONFIG_PATH="''${XDG_CONFIG_HOME:-$HOME/.config}/ed-outrider/ed_outrider.toml"' \
       --run 'mkdir -p "$OUTRIDER_DATA_DIR" "''${OUTRIDER_CONFIG_PATH%/*}"'
@@ -53,7 +54,7 @@ stdenv.mkDerivation {
     makeWrapper ${pythonEnv}/bin/python $out/bin/ed-outrider-overlay \
       --add-flags "-m outrider.overlay_runner" \
       --set PYTHONPATH "$out/share/ed-outrider" \
-      --prefix PATH : ${lib.makeBinPath [ wl-clipboard xclip ]} \
+      --prefix PATH : ${lib.makeBinPath [ wl-clipboard xclip pipewire ]} \
       --run "cd $out/share/ed-outrider" \
       --run 'export OUTRIDER_DATA_DIR="''${XDG_DATA_HOME:-$HOME/.local/share}/ed-outrider"' \
       --run 'export OUTRIDER_CONFIG_PATH="''${XDG_CONFIG_HOME:-$HOME/.config}/ed-outrider/ed_outrider.toml"' \
