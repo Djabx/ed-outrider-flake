@@ -57,5 +57,10 @@
       overlays.default = final: prev: {
         ed-outrider = self.packages.${prev.system}.ed-outrider;
       };
+
+      nixosModules = {
+        default = import ./nixos-module.nix self;
+        ed-outrider = self.nixosModules.default;
+      };
     };
 }
