@@ -62,5 +62,10 @@
         default = import ./nixos-module.nix self;
         ed-outrider = self.nixosModules.default;
       };
+
+      homeManagerModules = {
+        default = import ./home-manager-module.nix self;
+        ed-outrider = self.homeManagerModules.default;
+      };
     };
 }

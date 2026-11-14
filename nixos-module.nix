@@ -26,10 +26,10 @@ in
       description = "Port to serve on.";
     };
 
-    host = lib.mkOption {
-      type = lib.types.str;
-      default = "127.0.0.1";
-      description = "Address to serve on.";
+    listen = lib.mkOption {
+      type = lib.types.enum [ "localhost" "lan" ];
+      default = "localhost";
+      description = "Listen scope: 'localhost' (127.0.0.1 only) or 'lan' (0.0.0.0 with firewall restricted to private IPv4 and link-local/ULA IPv6 networks).";
     };
 
     extraArgs = lib.mkOption {
@@ -39,17 +39,32 @@ in
       description = "Extra arguments passed to ed-outrider.";
     };
 
-    openFirewall = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Open the port in the firewall (useful if connecting from tablet/phone).";
+    user = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Restrict the systemd user service to this specific user (via ConditionUser).";
     };
   };
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
 
-    networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [ cfg.port ];
+    networking.firewall = lib.mkIf (cfg.listen == "lan") {
+      extraCommands = ''
+        iptables -w -A nixos-fw -p tcp --dport ${toString cfg.port} -s 192.168.0.0/16 -j nixos-fw-accept
+        iptables -w -A nixos-fw -p tcp --dport ${toString cfg.port} -s 10.0.0.0/8 -j nixos-fw-accept
+        iptables -w -A nixos-fw -p tcp --dport ${toString cfg.port} -s 172.16.0.0/12 -j nixos-fw-accept
+        ip6tables -w -A nixos-fw -p tcp --dport ${toString cfg.port} -s fe80::/10 -j nixos-fw-accept
+        ip6tables -w -A nixos-fw -p tcp --dport ${toString cfg.port} -s fc00::/7 -j nixos-fw-accept
+      '';
+      extraStopCommands = ''
+        iptables -w -D nixos-fw -p tcp --dport ${toString cfg.port} -s 192.168.0.0/16 -j nixos-fw-accept 2>/dev/null || true
+        iptables -w -D nixos-fw -p tcp --dport ${toString cfg.port} -s 10.0.0.0/8 -j nixos-fw-accept 2>/dev/null || true
+        iptables -w -D nixos-fw -p tcp --dport ${toString cfg.port} -s 172.16.0.0/12 -j nixos-fw-accept 2>/dev/null || true
+        ip6tables -w -D nixos-fw -p tcp --dport ${toString cfg.port} -s fe80::/10 -j nixos-fw-accept 2>/dev/null || true
+        ip6tables -w -D nixos-fw -p tcp --dport ${toString cfg.port} -s fc00::/7 -j nixos-fw-accept 2>/dev/null || true
+      '';
+    };
 
     systemd.user.services.ed-outrider = {
       description = "ED-Outrider exploration companion for Elite Dangerous";
@@ -57,8 +72,12 @@ in
       partOf = [ "graphical-session.target" ];
       after = [ "graphical-session.target" ];
 
+      unitConfig = lib.mkIf (cfg.user != null) {
+        ConditionUser = cfg.user;
+      };
+
       serviceConfig = {
-        ExecStart = "${cfg.package}/bin/ed-outrider --host ${cfg.host} --port ${toString cfg.port} ${lib.escapeShellArgs cfg.extraArgs}";
+        ExecStart = "${cfg.package}/bin/ed-outrider --host ${if cfg.listen == "lan" then "0.0.0.0" else "127.0.0.1"} --port ${toString cfg.port} ${lib.escapeShellArgs cfg.extraArgs}";
         Restart = "on-failure";
         RestartSec = 5;
       };

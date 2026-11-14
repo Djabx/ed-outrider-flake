@@ -7,7 +7,8 @@ Nix flake packaging for [ED-Outrider](https://github.com/weslocke/ED-Outrider), 
 - **XDG Compliance**: Patched to store database, logs and settings in `$XDG_DATA_HOME` (`~/.local/share/ed-outrider`) and `$XDG_CONFIG_HOME` (`~/.config/ed-outrider`) instead of the read-only Nix store.
 - **Wayland & X11 Clipboard**: Bundles `wl-clipboard` and `xclip` in PATH for automatic route plotting clipboard integration.
 - **In-Game Overlay**: Includes `ed-outrider-overlay` wrapper with PyQt6 support.
-- **NixOS Module**: Includes `nixosModules.default` with a systemd user service (`ed-outrider.service`) started automatically with your graphical session.
+- **NixOS Module**: Includes `nixosModules.default` with a systemd user service (`ed-outrider.service`) started automatically with your graphical session. Supports `listen = "lan"` with firewall restricted to private IPv4 and link-local/ULA IPv6 (prevents Internet IPv6 exposure), and `user` option (`ConditionUser`).
+- **Home Manager Module**: Includes `homeManagerModules.default` (and `homeModules.default`) to configure the user service per-user cleanly.
 
 ## Usage
 
@@ -25,32 +26,36 @@ nix run .#overlay
 
 ### NixOS Module (`nixosModules.default`)
 
-In your `flake.nix`:
+Import `ed-outrider.nixosModules.default` in your NixOS configuration:
 
 ```nix
 {
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    ed-outrider = {
-      url = "git+https://git.badez.eu/ed/ed-outrider-flake.git";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
+  services.ed-outrider = {
+    enable = true;
+    port = 8025; # default: 8025
 
-  outputs = { self, nixpkgs, ed-outrider, ... }: {
-    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        ed-outrider.nixosModules.default
-        {
-          services.ed-outrider = {
-            enable = true;
-            port = 8025;
-            openFirewall = false; # Set to true to access web UI from phone/tablet on LAN
-          };
-        }
-      ];
-    };
+    # Listen scope: "localhost" (default, 127.0.0.1 only) or "lan"
+    # When set to "lan", binds to 0.0.0.0 and opens the firewall ONLY for
+    # private IPv4 networks and link-local/ULA IPv6 (never exposed to the Internet).
+    listen = "lan";
+
+    # Optional: restrict systemd user service to this user (via ConditionUser)
+    # Useful on multi-user systems to prevent port conflicts and unwanted background services
+    user = "alice";
+  };
+}
+```
+
+### Home Manager Module (`homeManagerModules.default` / `homeModules.default`)
+
+Import `ed-outrider.homeManagerModules.default` in your Home Manager configuration:
+
+```nix
+{
+  services.ed-outrider = {
+    enable = true;
+    port = 8025;
+    listen = "localhost"; # or "lan" to listen on 0.0.0.0
   };
 }
 ```
