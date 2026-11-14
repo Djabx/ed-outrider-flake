@@ -6,6 +6,7 @@ Nix flake packaging for [ED-Outrider](https://github.com/weslocke/ED-Outrider), 
 
 - **XDG Compliance**: Patched to store database, logs and settings in `$XDG_DATA_HOME` (`~/.local/share/ed-outrider`) and `$XDG_CONFIG_HOME` (`~/.config/ed-outrider`) instead of the read-only Nix store.
 - **Wayland & X11 Clipboard**: Bundles `wl-clipboard` and `xclip` in PATH for automatic route plotting clipboard integration.
+- **Voice & TTS**: Bundles `piper-tts` for local neural speech alerts and text-to-speech without extra setup.
 - **In-Game Overlay**: Includes `ed-outrider-overlay` wrapper with PyQt6 support.
 - **NixOS Module**: Includes `nixosModules.default` with a systemd user service (`ed-outrider.service`) started automatically with your graphical session. Supports `listen = "lan"` with firewall restricted to private IPv4 and link-local/ULA IPv6 (prevents Internet IPv6 exposure), and `user` option (`ConditionUser`).
 - **Home Manager Module**: Includes `homeManagerModules.default` (and `homeModules.default`) to configure the user service per-user cleanly.
