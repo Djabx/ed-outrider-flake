@@ -37,7 +37,8 @@ stdenv.mkDerivation {
       --replace-fail 'DATA_DIR = os.path.join(ROOT, "data")' 'DATA_DIR = os.environ.get("OUTRIDER_DATA_DIR", os.path.join(ROOT, "data"))'
 
     substituteInPlace ed_outrider.py \
-      --replace-fail 'CONFIG_PATH = os.path.join(SCRIPT_DIR, "ed_outrider.toml")' 'CONFIG_PATH = os.environ.get("OUTRIDER_CONFIG_PATH", os.path.join(SCRIPT_DIR, "ed_outrider.toml"))'
+      --replace-fail 'CONFIG_PATH = os.path.join(SCRIPT_DIR, "ed_outrider.toml")' 'CONFIG_PATH = os.environ.get("OUTRIDER_CONFIG_PATH", os.path.join(SCRIPT_DIR, "ed_outrider.toml"))' \
+      --replace-fail 'with zipfile.ZipFile(path + ".part", "w", zipfile.ZIP_DEFLATED) as z:' 'with zipfile.ZipFile(path + ".part", "w", zipfile.ZIP_DEFLATED, strict_timestamps=False) as z:'
   '';
 
   installPhase = ''
