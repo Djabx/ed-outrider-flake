@@ -2,8 +2,8 @@ name: Update Upstream Flake
 
 on:
   schedule:
-    # Weekly on Monday at 04:00 UTC
-    - cron: "0 4 * * 1"
+    # Weekly on Monday at 19:00 UTC
+    - cron: "0 19 * * 1"
   workflow_dispatch:
 
 jobs:
