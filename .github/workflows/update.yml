@@ -35,7 +35,7 @@ jobs:
             echo "has_updates=false" >> $GITHUB_OUTPUT
             echo "No upstream changes found."
           else
-            echo "has_updates=true" >> $GITHUB_OUTPUU
+            echo "has_updates=true" >> $GITHUB_OUTPUT
             echo "Upstream inputs updated."
           fi
 
